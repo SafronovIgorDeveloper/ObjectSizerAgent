@@ -75,6 +75,39 @@ println("Полный размер объекта: "+fullSize +" байт.");
 
 ---
 
+## Устранение проблем
+
+### Ошибка `java.lang.reflect.InaccessibleObjectException`
+
+Если при использовании агента вы сталкиваетесь с ошибкой `java.lang.reflect.InaccessibleObjectException`, это связано с
+модульной системой Java, начиная с версии 9. Эта ошибка возникает при попытке агента получить доступ к закрытым полям
+стандартных библиотек Java (например, классов `java.lang.String`).
+
+**Решение:** Добавьте аргумент JVM, чтобы открыть модуль `java.base` для вашего агента.
+
+```bash
+--add-opens java.base/java.lang=ALL-UNNAMED
+```
+
+Пример команды для запуска:
+
+```bash
+java --add-opens java.base/java.lang=ALL-UNNAMED \
+    -javaagent:/path/to/ObjectSizerAgent.jar \
+    -cp . MainClass
+```
+
+#### Добавление параметра в IntelliJ IDEA
+
+1. Откройте конфигурацию запуска в **Edit Configurations**.
+2. Найдите поле `VM Options` и добавьте:
+   ```text
+   --add-opens java.base/java.lang=ALL-UNNAMED
+   ```
+3. Сохраните и перезапустите приложение.
+
+---
+
 ## Полезные советы
 
 - **Поддержка циклических зависимостей**: Агент обрабатывает графы объектов с циклическими ссылками, чтобы избежать
